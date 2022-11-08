@@ -1,7 +1,9 @@
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
-def dataSplit(seq:pd.Series,lookback:int,trainSet_ratio = 0.7):
+
+def dataSplit(seq:pd.Series,lookback:int,valSet_ratio = 0.3, random_state = 42,shuffle=True):
     """
     Description
     -----------
@@ -15,7 +17,9 @@ def dataSplit(seq:pd.Series,lookback:int,trainSet_ratio = 0.7):
     ----------
      seq: 序列
      lookback: 使用数目为lookback的时间步预测后面的序列值
-     trainSet_ratio: 划分训练集的比例
+     valSet_ratio: 划分验证集的比例
+     random_state: 随机数种子
+     shuffle: 默认为True,是否打乱数据集
     
     Returns
     -------
@@ -32,13 +36,12 @@ def dataSplit(seq:pd.Series,lookback:int,trainSet_ratio = 0.7):
     # data_X = data_X.squeeze()
 
     # 数据划分
-    train_size = int(len(data_X) * trainSet_ratio)
-    val_size = len(data_X) - train_size
-
-    train_X = data_X[:train_size]
-    train_Y = data_Y[:train_size]
-    val_X = data_X[train_size:train_size+val_size]
-    val_Y = data_Y[train_size:train_size+val_size]
+    train_X,val_X , train_Y,val_Y = train_test_split(data_X,data_Y,test_size=valSet_ratio,random_state=random_state,shuffle=shuffle)
+    print(train_X.shape)
+    print(train_Y.shape)
+    print(val_X.shape)
+    print(val_Y.shape)
+    val_size = val_X.shape[0]
 
     print("验证集时间步数为{}".format(val_size))
     return (train_X,train_Y) , (val_X,val_Y)
